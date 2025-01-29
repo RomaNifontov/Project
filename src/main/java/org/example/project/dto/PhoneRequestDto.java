@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ClientRequestDto {
+public class PhoneRequestDto {
 
-    private String firstName;
+    private Long clientId;
+    private String phoneNumber;
 
 }

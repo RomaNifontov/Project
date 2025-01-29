@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ClientRequestDto {
+public class EmailRequestDto {
 
-    private String firstName;
+    private Long clientId;
+    private String email;
 
 }

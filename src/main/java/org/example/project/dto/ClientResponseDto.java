@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -17,7 +17,7 @@ public class ClientResponseDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private Set<String> emails;
-    private Set<String> phoneNumbers;
+    private List<String> emails;
+    private List<String> phoneNumbers;
     private LocalDateTime createdAt;
 }
