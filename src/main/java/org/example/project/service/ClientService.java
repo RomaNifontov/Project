@@ -23,6 +23,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ClientService {
 
     private final ClientRepository clientRepository;
@@ -36,6 +37,7 @@ public class ClientService {
         client.setEmails(new HashSet<>());
         client.setPhoneNumbers(new HashSet<>());
         clientRepository.save(client);
+        log.info("Client created: {}", client.getFirstName());
         return clientMapper.toClientDto(client);
     }
 
@@ -50,6 +52,7 @@ public class ClientService {
                 .build());
         client.setEmails(emails);
         clientRepository.save(client);
+        log.info("Email {} added to client {}",emailRequestDto.getEmail(), client.getFirstName());
         return clientMapper.toClientDto(client);
     }
 
@@ -64,24 +67,28 @@ public class ClientService {
                 .build());
         client.setPhoneNumbers(telephoneNumbers);
         clientRepository.save(client);
+        log.info("TelephoneNumber {} added to client {}",phoneRequestDto.getPhoneNumber(), client.getFirstName());
         return clientMapper.toClientDto(client);
     }
 
     @Transactional
     public List<ClientResponseDto> getAllClients() {
         List<Client> clients = clientRepository.findAll();
+        log.info("All clients found");
         return clientMapper.toClientDtos(clients);
     }
 
     @Transactional
     public ClientResponseDto getClientById(Long clientId) {
         Client client = getClientFromDB(clientId);
+        log.info("Client found: {}", client.getFirstName());
         return clientMapper.toClientDto(client);
     }
 
     @Transactional
     public List<String> getPhoneNumbersByClientId(Long clientId) {
         Client client = getClientFromDB(clientId);
+        log.info("TelephoneNumbersFoun", client.getPhoneNumbers());
         return client.getPhoneNumbers().stream().map(PhoneNumber::getNumber).toList();
     }
 

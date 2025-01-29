@@ -11,6 +11,7 @@ import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ClientMapper {
@@ -24,14 +25,14 @@ public interface ClientMapper {
     List<ClientResponseDto> toClientDtos(List<Client> clients);
 
     @Named("mapEmailsToName")
-    default List<String> mapEmailsToName(List<Email> emails) {
+    default List<String> mapEmailsToName(Set<Email> emails) {
         return emails.stream()
                 .map(Email::getEmail)
                 .toList();
     }
 
     @Named("mapPhonesToName")
-    default List<String> mapPhonesToName(List<PhoneNumber> phoneNumbers) {
+    default List<String> mapPhonesToName(Set<PhoneNumber> phoneNumbers) {
         return phoneNumbers.stream()
                 .map(PhoneNumber::getNumber)
                 .toList();

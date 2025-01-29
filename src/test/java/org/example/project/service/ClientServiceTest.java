@@ -4,7 +4,10 @@ import org.example.project.dto.ClientRequestDto;
 import org.example.project.dto.ClientResponseDto;
 import org.example.project.dto.EmailRequestDto;
 import org.example.project.dto.PhoneRequestDto;
+import org.example.project.mapper.ClientMapperImpl;
 import org.example.project.model.Client;
+import org.example.project.model.Email;
+import org.example.project.model.PhoneNumber;
 import org.example.project.repository.ClientRepository;
 import org.example.project.validator.ClientValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +54,7 @@ public class ClientServiceTest {
         requestDto = ClientRequestDto.builder()
                 .firstName("Roma")
                 .build();
-        EmailRequestDto.builder()
+        emailRequestDto = EmailRequestDto.builder()
                 .clientId(13L)
                 .email("roma@example.com")
                 .build();
@@ -89,10 +92,10 @@ public class ClientServiceTest {
     @Test
     void testAddNewPhoneSuccess() {
         when(clientRepository.findById(13L)).thenReturn(Optional.of(client));
-        ClientResponseDto responseDto = clientService.addNewEmail(emailRequestDto);
+        ClientResponseDto responseDto = clientService.addNewTelephoneNumber(phoneRequestDto);
         verify(clientRepository).save(client);
         assertEquals("Roma", responseDto.getFirstName());
-        assertEquals("roma@example.com", responseDto.getEmails().get(0));
+        assertEquals("+7 9111111111", responseDto.getPhoneNumbers().get(0));
     }
 
     @Test
@@ -114,6 +117,8 @@ public class ClientServiceTest {
 
     @Test
     void testGetPhoneNumbersByClientIdSuccess() {
+        PhoneNumber number = PhoneNumber.builder().number("+7 9111111111").build();
+        client.getPhoneNumbers().add(number);
         when(clientRepository.findById(13L)).thenReturn(Optional.of(client));
         List<String> phoneNumbers = clientService.getPhoneNumbersByClientId(13L);
         verify(clientRepository).findById(13L);
@@ -123,6 +128,8 @@ public class ClientServiceTest {
 
     @Test
     void testGetEmailsByClientIdSuccess() {
+        Email email = Email.builder().email("roma@example.com").build();
+        client.getEmails().add(email);
         when(clientRepository.findById(13L)).thenReturn(Optional.of(client));
         List<String> emails = clientService.getEmailsByClientId(13L);
         verify(clientRepository).findById(13L);

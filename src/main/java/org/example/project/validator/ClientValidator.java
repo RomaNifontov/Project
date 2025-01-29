@@ -31,9 +31,6 @@ public class ClientValidator {
         if (badWords.contains(clientDto.getFirstName())) {
             throw new IllegalArgumentException("The name is incorrect " + clientDto.getFirstName());
         }
-        if(badWords.contains(clientDto.getLastName())) {
-            throw new IllegalArgumentException("The lastname is incorrect " + clientDto.getLastName());
-        }
     }
 
     public void validateEmail(String email) {

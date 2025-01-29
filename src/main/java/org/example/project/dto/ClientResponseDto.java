@@ -16,7 +16,6 @@ public class ClientResponseDto {
 
     private Long id;
     private String firstName;
-    private String lastName;
     private List<String> emails;
     private List<String> phoneNumbers;
     private LocalDateTime createdAt;
