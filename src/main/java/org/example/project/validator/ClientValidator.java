@@ -2,7 +2,6 @@ package org.example.project.validator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.example.project.dto.ClientRequestDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,7 @@ import java.util.regex.Pattern;
 @Component
 public class ClientValidator {
 
-    @Value("${moderation-scheduler.dictionary-path}")
+    @Value("${spring.moderation-scheduler.dictionary-path}")
     private String dictionaryPath;
 
     private final String EMAIL_PATTERN = "^((([0-9A-Za-z]{1}[-0-9A-z\\.]" +
@@ -28,8 +27,8 @@ public class ClientValidator {
 
     public void validate(ClientRequestDto clientDto) {
         List<String> badWords = getWords();
-        if (badWords.contains(clientDto.getFirstName())) {
-            throw new IllegalArgumentException("The name is incorrect " + clientDto.getFirstName());
+        if (badWords.contains(clientDto.getName())) {
+            throw new IllegalArgumentException("The name is incorrect " + clientDto.getName());
         }
     }
 

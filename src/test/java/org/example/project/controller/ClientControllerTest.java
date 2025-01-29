@@ -39,9 +39,9 @@ public class ClientControllerTest {
     @Test
     void testCreateClientSuccess() throws Exception {
         ClientRequestDto clientRequestDto = ClientRequestDto.builder()
-                .firstName("Roma").build();
+                .name("Roma").build();
         ClientResponseDto clientResponseDto = ClientResponseDto.builder()
-                .firstName("Roma")
+                .name("Roma")
                 .build();
         when(clientService.createClient(clientRequestDto)).thenReturn(clientResponseDto);
 
@@ -49,12 +49,9 @@ public class ClientControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(clientRequestDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.firstName", is("Roma")));
+                .andExpect(jsonPath("$.name", is("Roma")));
 
         verify(clientService).createClient(clientRequestDto);
     }
-
-
-
 
 }

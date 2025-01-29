@@ -3,7 +3,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: password
+    password: Krasavchic99
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -14,14 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
-#  data:
-#    redis:
-#      port: 6379
-#      host: localhost
-
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  moderation-scheduler:
+    dictionary-path: src\main\resources\dictionary\moderator.json
 
 server:
   port: 8083

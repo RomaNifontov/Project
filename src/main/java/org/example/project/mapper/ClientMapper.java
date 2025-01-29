@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public interface ClientMapper {
 
     @Named("mapEmailsToName")
     default List<String> mapEmailsToName(Set<Email> emails) {
+        if (emails == null || emails.isEmpty()) {
+            return new ArrayList<>();
+        }
         return emails.stream()
                 .map(Email::getEmail)
                 .toList();
@@ -33,6 +37,9 @@ public interface ClientMapper {
 
     @Named("mapPhonesToName")
     default List<String> mapPhonesToName(Set<PhoneNumber> phoneNumbers) {
+        if (phoneNumbers == null || phoneNumbers.isEmpty()) {
+            return new ArrayList<>();
+        }
         return phoneNumbers.stream()
                 .map(PhoneNumber::getNumber)
                 .toList();

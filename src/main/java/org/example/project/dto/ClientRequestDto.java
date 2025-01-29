@@ -1,5 +1,6 @@
 package org.example.project.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ClientRequestDto {
 
-    private String firstName;
+    @NotBlank(message = "firstname cannot be blank")
+    private String name;
 
 }

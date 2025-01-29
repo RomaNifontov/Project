@@ -5,13 +5,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.project.dto.ClientRequestDto;
 import org.example.project.dto.ClientResponseDto;
-import org.example.project.dto.EmailRequestDto;
-import org.example.project.dto.PhoneRequestDto;
+import org.example.project.dto.EmailDto;
+import org.example.project.dto.PhoneDto;
 import org.example.project.mapper.ClientMapper;
 import org.example.project.model.Client;
 import org.example.project.model.Email;
 import org.example.project.model.PhoneNumber;
 import org.example.project.repository.ClientRepository;
+import org.example.project.repository.EmailRepository;
+import org.example.project.repository.PhoneRepository;
 import org.example.project.validator.ClientValidator;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientValidator clientValidator;
+    private final EmailRepository emailRepository;
+    private final PhoneRepository phoneRepository;
     private final ClientMapper clientMapper;
 
     @Transactional
@@ -37,43 +41,41 @@ public class ClientService {
         client.setEmails(new HashSet<>());
         client.setPhoneNumbers(new HashSet<>());
         clientRepository.save(client);
-        log.info("Client created: {}", client.getFirstName());
+        log.info("Client created: {}", client.getName());
         return clientMapper.toClientDto(client);
     }
 
     @Transactional
-    public ClientResponseDto addNewEmail(EmailRequestDto emailRequestDto) {
-        clientValidator.validateEmail(emailRequestDto.getEmail());
-        Client client = getClientFromDB(emailRequestDto.getClientId());
-        Set<Email> emails = client.getEmails();
-        emails.add(Email.builder()
-                .email(emailRequestDto.getEmail())
-                .client(client)
-                .build());
-        client.setEmails(emails);
-        clientRepository.save(client);
-        log.info("Email {} added to client {}",emailRequestDto.getEmail(), client.getFirstName());
-        return clientMapper.toClientDto(client);
+    public EmailDto addNewEmail(EmailDto emailDto) {
+        clientValidator.validateEmail(emailDto.getEmail());
+        Client client = getClientFromDB(emailDto.getClientId());
+        Email email = new Email();
+        email.setEmail(emailDto.getEmail());
+        email.setClient(client);
+        emailRepository.save(email);
+        log.info("Email {} added to client {}", emailDto.getEmail(), client.getName());
+        return emailDto;
     }
 
     @Transactional
-    public ClientResponseDto addNewTelephoneNumber(PhoneRequestDto phoneRequestDto) {
-        clientValidator.validateNumber(phoneRequestDto.getPhoneNumber());
-        Client client = getClientFromDB(phoneRequestDto.getClientId());
-        Set<PhoneNumber> telephoneNumbers = client.getPhoneNumbers();
-        telephoneNumbers.add(PhoneNumber.builder()
-                .number(phoneRequestDto.getPhoneNumber())
-                .client(client)
-                .build());
-        client.setPhoneNumbers(telephoneNumbers);
-        clientRepository.save(client);
-        log.info("TelephoneNumber {} added to client {}",phoneRequestDto.getPhoneNumber(), client.getFirstName());
-        return clientMapper.toClientDto(client);
+    public PhoneDto addNewTelephoneNumber(PhoneDto phoneDto) {
+        clientValidator.validateNumber(phoneDto.getPhoneNumber());
+        Client client = getClientFromDB(phoneDto.getClientId());
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setNumber(phoneDto.getPhoneNumber());
+        phoneNumber.setClient(client);
+        phoneRepository.save(phoneNumber);
+        log.info("TelephoneNumber {} added to client {}", phoneDto.getPhoneNumber(), client.getName());
+        return phoneDto;
     }
 
     @Transactional
     public List<ClientResponseDto> getAllClients() {
         List<Client> clients = clientRepository.findAll();
+        if (clients.isEmpty()) {
+            log.info("No clients found");
+            return new ArrayList<>();
+        }
         log.info("All clients found");
         return clientMapper.toClientDtos(clients);
     }
@@ -81,14 +83,14 @@ public class ClientService {
     @Transactional
     public ClientResponseDto getClientById(Long clientId) {
         Client client = getClientFromDB(clientId);
-        log.info("Client found: {}", client.getFirstName());
+        log.info("Client found: {}", client.getName());
         return clientMapper.toClientDto(client);
     }
 
     @Transactional
     public List<String> getPhoneNumbersByClientId(Long clientId) {
         Client client = getClientFromDB(clientId);
-        log.info("TelephoneNumbersFoun", client.getPhoneNumbers());
+        log.info("TelephoneNumbers found {}", client.getPhoneNumbers());
         return client.getPhoneNumbers().stream().map(PhoneNumber::getNumber).toList();
     }
 
@@ -96,6 +98,14 @@ public class ClientService {
     public List<String> getEmailsByClientId(Long clientId) {
         Client client = getClientFromDB(clientId);
         return client.getEmails().stream().map(Email::getEmail).toList();
+    }
+
+    @Transactional
+    public List<String> getEmailsWithFilter(Long clientId, String filter) {
+        Client client = getClientFromDB(clientId);
+        Set<Email> emails = client.getEmails();
+        log.info("Emails with filter {} found", filter);
+        return emails.stream().map(Email::getEmail).filter(email -> email.contains(filter)).toList();
     }
 
     private Client getClientFromDB(Long clientId) {

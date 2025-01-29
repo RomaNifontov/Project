@@ -2,13 +2,15 @@ package org.example.project.service;
 
 import org.example.project.dto.ClientRequestDto;
 import org.example.project.dto.ClientResponseDto;
-import org.example.project.dto.EmailRequestDto;
-import org.example.project.dto.PhoneRequestDto;
+import org.example.project.dto.EmailDto;
+import org.example.project.dto.PhoneDto;
 import org.example.project.mapper.ClientMapperImpl;
 import org.example.project.model.Client;
 import org.example.project.model.Email;
 import org.example.project.model.PhoneNumber;
 import org.example.project.repository.ClientRepository;
+import org.example.project.repository.EmailRepository;
+import org.example.project.repository.PhoneRepository;
 import org.example.project.validator.ClientValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,10 @@ public class ClientServiceTest {
 
     @Captor
     private ArgumentCaptor<Client> clientCaptor;
+    @Captor
+    private ArgumentCaptor<PhoneNumber> phoneNumberCaptor;
+    @Captor
+    private ArgumentCaptor<Email> emailCaptor;
 
     @InjectMocks
     private ClientService clientService;
@@ -40,31 +46,35 @@ public class ClientServiceTest {
     @Mock
     private ClientRepository clientRepository;
     @Mock
+    private EmailRepository emailRepository;
+    @Mock
+    private PhoneRepository phoneRepository;
+    @Mock
     private ClientValidator clientValidator;
     @Spy
     private ClientMapperImpl clientMapper;
 
     private ClientRequestDto requestDto;
-    private EmailRequestDto emailRequestDto;
-    private PhoneRequestDto phoneRequestDto;
+    private EmailDto emailDto;
+    private PhoneDto phoneDto;
     private Client client;
 
     @BeforeEach
     void setUp() {
         requestDto = ClientRequestDto.builder()
-                .firstName("Roma")
+                .name("Roma")
                 .build();
-        emailRequestDto = EmailRequestDto.builder()
+        emailDto = EmailDto.builder()
                 .clientId(13L)
                 .email("roma@example.com")
                 .build();
         client = Client.builder()
                 .id(13L)
-                .firstName("Roma")
+                .name("Roma")
                 .emails(new HashSet<>())
                 .phoneNumbers(new HashSet<>())
                 .build();
-        phoneRequestDto = PhoneRequestDto.builder()
+        phoneDto = PhoneDto.builder()
                 .phoneNumber("+7 9111111111")
                 .clientId(13L)
                 .build();
@@ -75,27 +85,25 @@ public class ClientServiceTest {
     void testCreateClientSuccess() {
         ClientResponseDto responseDto = clientService.createClient(requestDto);
         verify(clientRepository).save(clientCaptor.capture());
-        assertEquals("Roma", clientCaptor.getValue().getFirstName());
-        assertEquals("Roma", responseDto.getFirstName());
+        assertEquals("Roma", clientCaptor.getValue().getName());
+        assertEquals("Roma", responseDto.getName());
         assertEquals(0, responseDto.getEmails().size());
     }
 
     @Test
     void testAddNewEmailSuccess() {
         when(clientRepository.findById(13L)).thenReturn(Optional.of(client));
-        ClientResponseDto responseDto = clientService.addNewEmail(emailRequestDto);
-        verify(clientRepository).save(client);
-        assertEquals("Roma", responseDto.getFirstName());
-        assertEquals("roma@example.com", responseDto.getEmails().get(0));
+        EmailDto responseDto = clientService.addNewEmail(emailDto);
+        verify(emailRepository).save(emailCaptor.capture());
+        assertEquals("roma@example.com", responseDto.getEmail());
     }
 
     @Test
     void testAddNewPhoneSuccess() {
         when(clientRepository.findById(13L)).thenReturn(Optional.of(client));
-        ClientResponseDto responseDto = clientService.addNewTelephoneNumber(phoneRequestDto);
-        verify(clientRepository).save(client);
-        assertEquals("Roma", responseDto.getFirstName());
-        assertEquals("+7 9111111111", responseDto.getPhoneNumbers().get(0));
+        PhoneDto responseDto = clientService.addNewTelephoneNumber(phoneDto);
+        verify(phoneRepository).save(phoneNumberCaptor.capture());
+        assertEquals("+7 9111111111", responseDto.getPhoneNumber());
     }
 
     @Test
@@ -104,7 +112,7 @@ public class ClientServiceTest {
         List<ClientResponseDto> clients = clientService.getAllClients();
         verify(clientRepository).findAll();
         assertEquals(1, clients.size());
-        assertEquals("Roma", clients.get(0).getFirstName());
+        assertEquals("Roma", clients.get(0).getName());
     }
 
     @Test
@@ -112,7 +120,7 @@ public class ClientServiceTest {
         when(clientRepository.findById(13L)).thenReturn(Optional.of(client));
         ClientResponseDto responseDto = clientService.getClientById(13L);
         verify(clientRepository).findById(13L);
-        assertEquals("Roma", responseDto.getFirstName());
+        assertEquals("Roma", responseDto.getName());
     }
 
     @Test
