@@ -38,8 +38,8 @@ public class ClientService {
     public ClientResponseDto createClient(ClientRequestDto clientRequestDto) {
         clientValidator.validate(clientRequestDto);
         Client client = clientMapper.toClient(clientRequestDto);
-        client.setEmails(new HashSet<>());
-        client.setPhoneNumbers(new HashSet<>());
+//        client.setEmails(new HashSet<>());
+//        client.setPhoneNumbers(new HashSet<>());
         clientRepository.save(client);
         log.info("Client created: {}", client.getName());
         return clientMapper.toClientDto(client);
