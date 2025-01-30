@@ -13,6 +13,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 
 @Data
 @AllArgsConstructor
@@ -32,5 +34,22 @@ public class Email {
 
     @Column(name = "email", length = 256, unique = true, nullable = false)
     private String email;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Email other = (Email) obj;
+        return Objects.equals(email, other.email);
+    }
 
 }

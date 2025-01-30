@@ -13,6 +13,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,5 +33,22 @@ public class PhoneNumber {
 
     @Column(name = "number", length = 30, unique = true, nullable = false)
     private String number;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        PhoneNumber other = (PhoneNumber) obj;
+        return Objects.equals(number, other.number);
+    }
 
 }
