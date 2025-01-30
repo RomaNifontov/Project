@@ -18,7 +18,6 @@ import org.example.project.validator.ClientValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,8 +37,6 @@ public class ClientService {
     public ClientResponseDto createClient(ClientRequestDto clientRequestDto) {
         clientValidator.validate(clientRequestDto);
         Client client = clientMapper.toClient(clientRequestDto);
-//        client.setEmails(new HashSet<>());
-//        client.setPhoneNumbers(new HashSet<>());
         clientRepository.save(client);
         log.info("Client created: {}", client.getName());
         return clientMapper.toClientDto(client);
